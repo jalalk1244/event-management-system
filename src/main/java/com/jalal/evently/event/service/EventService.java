@@ -1,6 +1,5 @@
 package com.jalal.evently.event.service;
 
-import com.jalal.evently.common.exception.NotFoundException;
 import com.jalal.evently.event.dto.EventCreateRequest;
 import com.jalal.evently.event.dto.EventResponse;
 import com.jalal.evently.event.entity.Event;
@@ -18,15 +17,17 @@ public class EventService {
         this.eventRepository = eventRepository;
     }
 
-    public EventResponse create(EventCreateRequest req) {
-        Event e = new Event();
-        e.setTitle(req.getTitle());
-        e.setDescription(req.getDescription());
-        e.setDateTime(req.getDateTime());
-        e.setLocation(req.getLocation());
-        e.setCapacity(req.getCapacity());
+    public EventResponse create(EventCreateRequest req, String createdByEmail) {
+        Event event = new Event();
+        event.setTitle(req.getTitle());
+        event.setDescription(req.getDescription());
+        event.setLocation(req.getLocation());
+        event.setStartTime(req.getStartTime());
+        event.setEndTime(req.getEndTime());
+        event.setCapacity(req.getCapacity());
+        event.setCreatedByEmail(createdByEmail);
 
-        Event saved = eventRepository.save(e);
+        Event saved = eventRepository.save(event);
         return toResponse(saved);
     }
 
@@ -35,30 +36,9 @@ public class EventService {
     }
 
     public EventResponse getById(Long id) {
-        Event e = eventRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Event not found: " + id));
-        return toResponse(e);
-    }
-
-    public EventResponse update(Long id, EventCreateRequest req) {
-        Event e = eventRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Event not found: " + id));
-
-        e.setTitle(req.getTitle());
-        e.setDescription(req.getDescription());
-        e.setDateTime(req.getDateTime());
-        e.setLocation(req.getLocation());
-        e.setCapacity(req.getCapacity());
-
-        Event saved = eventRepository.save(e);
-        return toResponse(saved);
-    }
-
-    public void delete(Long id) {
-        if (!eventRepository.existsById(id)) {
-            throw new NotFoundException("Event not found: " + id);
-        }
-        eventRepository.deleteById(id);
+        Event event = eventRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Event not found"));
+        return EventResponse.from(event);
     }
 
     private EventResponse toResponse(Event e) {
@@ -66,9 +46,32 @@ public class EventService {
                 e.getId(),
                 e.getTitle(),
                 e.getDescription(),
-                e.getDateTime(),
                 e.getLocation(),
-                e.getCapacity()
+                e.getStartTime(),
+                e.getEndTime(),
+                e.getCapacity(),
+                e.getCreatedByEmail()
         );
+    }
+
+    public EventResponse update(Long id, EventCreateRequest req) {
+        Event event = eventRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Event not found"));
+
+        event.setTitle(req.getTitle());
+        event.setDescription(req.getDescription());
+        event.setLocation(req.getLocation());
+        event.setStartTime(req.getStartTime());
+        event.setEndTime(req.getEndTime());
+        event.setCapacity(req.getCapacity());
+
+        return EventResponse.from(eventRepository.save(event));
+    }
+
+    public void delete(Long id) {
+        if (!eventRepository.existsById(id)) {
+            throw new RuntimeException("Event not found");
+        }
+        eventRepository.deleteById(id);
     }
 }

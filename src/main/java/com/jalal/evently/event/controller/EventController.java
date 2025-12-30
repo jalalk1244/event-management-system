@@ -1,5 +1,6 @@
 package com.jalal.evently.event.controller;
 
+import java.security.Principal;
 import com.jalal.evently.event.dto.EventCreateRequest;
 import com.jalal.evently.event.dto.EventResponse;
 import com.jalal.evently.event.service.EventService;
@@ -21,8 +22,8 @@ public class EventController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public EventResponse create(@Valid @RequestBody EventCreateRequest req) {
-        return eventService.create(req);
+    public EventResponse create(@Valid @RequestBody EventCreateRequest req, Principal principal) {
+        return eventService.create(req, principal.getName());
     }
 
     @GetMapping

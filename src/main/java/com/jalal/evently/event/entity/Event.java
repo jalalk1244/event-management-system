@@ -11,23 +11,30 @@ public class Event {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 120)
+    @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false, length = 4000)
+    @Column(length = 2000)
     private String description;
 
     @Column(nullable = false)
-    private LocalDateTime dateTime;
-
-    @Column(nullable = false, length = 255)
     private String location;
+
+    @Column(nullable = false)
+    private LocalDateTime startTime;
+
+    @Column(nullable = false)
+    private LocalDateTime endTime;
 
     @Column(nullable = false)
     private Integer capacity;
 
-    // --- getters/setters ---
+    // wire this to User later
+    private String createdByEmail;
 
+    public Event() {}
+
+    // getters/setters (generate in IntelliJ)
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -37,12 +44,18 @@ public class Event {
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
 
-    public LocalDateTime getDateTime() { return dateTime; }
-    public void setDateTime(LocalDateTime dateTime) { this.dateTime = dateTime; }
-
     public String getLocation() { return location; }
     public void setLocation(String location) { this.location = location; }
 
+    public LocalDateTime getStartTime() { return startTime; }
+    public void setStartTime(LocalDateTime startTime) { this.startTime = startTime; }
+
+    public LocalDateTime getEndTime() { return endTime; }
+    public void setEndTime(LocalDateTime endTime) { this.endTime = endTime; }
+
     public Integer getCapacity() { return capacity; }
     public void setCapacity(Integer capacity) { this.capacity = capacity; }
+
+    public String getCreatedByEmail() { return createdByEmail; }
+    public void setCreatedByEmail(String createdByEmail) { this.createdByEmail = createdByEmail; }
 }
