@@ -5,6 +5,7 @@ import com.jalal.evently.event.dto.EventResponse;
 import com.jalal.evently.event.entity.Event;
 import com.jalal.evently.event.repository.EventRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -68,10 +69,11 @@ public class EventService {
         return EventResponse.from(eventRepository.save(event));
     }
 
+    @Transactional
     public void delete(Long id) {
-        if (!eventRepository.existsById(id)) {
-            throw new RuntimeException("Event not found");
-        }
-        eventRepository.deleteById(id);
+        Event event = eventRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Event not found"));
+
+        eventRepository.delete(event);
     }
 }

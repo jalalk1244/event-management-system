@@ -51,6 +51,6 @@ public class AuthService {
         // IMPORTANT: subject should match what your JwtAuthFilter extracts (usually username/email)
         String token = jwtService.generateToken(user);
 
-        return new AuthResponse(token, user.getEmail());
+        return new AuthResponse(token, user.getEmail(), user.getRole());
     }
 }

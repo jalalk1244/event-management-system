@@ -1,5 +1,6 @@
 package com.jalal.evently.auth.security;
 
+import com.jalal.evently.auth.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.HashMap;
 
 @Service
 public class JwtService {
@@ -23,6 +25,11 @@ public class JwtService {
     public String generateToken(UserDetails userDetails) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + expirationMs);
+
+        HashMap<String, Object> claims = new HashMap<>();
+        if (userDetails instanceof User user) {
+            claims.put("role", user.getRole().name()); // ADMIN / USER
+        }
 
         return Jwts.builder()
                 .subject(userDetails.getUsername()) // usually email

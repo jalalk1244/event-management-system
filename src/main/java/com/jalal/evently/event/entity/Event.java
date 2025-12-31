@@ -1,7 +1,11 @@
 package com.jalal.evently.event.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.jalal.evently.ticket.entity.Ticket;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "events")
@@ -33,6 +37,18 @@ public class Event {
     private String createdByEmail;
 
     public Event() {}
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Ticket> tickets = new ArrayList<>();
+
+    public List<Ticket> getTickets() {
+        return tickets;
+    }
+
+    public void setTickets(List<Ticket> tickets) {
+        this.tickets = tickets;
+    }
 
     // getters/setters (generate in IntelliJ)
     public Long getId() { return id; }

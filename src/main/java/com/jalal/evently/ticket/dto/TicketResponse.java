@@ -6,12 +6,14 @@ public class TicketResponse {
     private Long id;
     private Long eventId;
     private String userEmail;
+    private String eventTitle;
     private LocalDateTime bookedAt;
 
     public TicketResponse() {}
 
-    public TicketResponse(Long id, Long eventId, String userEmail, LocalDateTime bookedAt) {
+    public TicketResponse(Long id, Long eventId, String eventTitle, String userEmail, LocalDateTime bookedAt) {
         this.id = id;
+        this.eventTitle = eventTitle;
         this.eventId = eventId;
         this.userEmail = userEmail;
         this.bookedAt = bookedAt;
@@ -21,6 +23,7 @@ public class TicketResponse {
         return new TicketResponse(
                 ticket.getId(),
                 ticket.getEvent().getId(),
+                ticket.getEvent().getTitle(),
                 ticket.getUser().getEmail(),
                 ticket.getBookedAt()
         );
@@ -33,6 +36,9 @@ public class TicketResponse {
 
     public Long getEventId() { return eventId; }
     public void setEventId(Long eventId) { this.eventId = eventId; }
+
+    public String getEventTitle() { return eventTitle; }
+    public void setEventTitle(String eventTitle) { this.eventTitle = eventTitle; }
 
     public String getUserEmail() { return userEmail; }
     public void setUserEmail(String userEmail) { this.userEmail = userEmail; }
