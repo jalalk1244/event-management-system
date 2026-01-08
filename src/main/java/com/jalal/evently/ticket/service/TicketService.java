@@ -2,17 +2,18 @@ package com.jalal.evently.ticket.service;
 
 import com.jalal.evently.auth.entity.User;
 import com.jalal.evently.auth.repository.UserRepository;
-import java.util.List;
+import com.jalal.evently.common.ApiException;
 import com.jalal.evently.event.entity.Event;
 import com.jalal.evently.event.repository.EventRepository;
+import com.jalal.evently.ticket.dto.TicketResponse;
 import com.jalal.evently.ticket.entity.Ticket;
 import com.jalal.evently.ticket.repository.TicketRepository;
-import com.jalal.evently.ticket.dto.TicketResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-
+import java.util.List;
 
 @Service
 public class TicketService {
@@ -31,24 +32,20 @@ public class TicketService {
     public Ticket book(Long eventId, String userEmail) {
 
         User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "USER_NOT_FOUND", "User not found"));
 
-        // lock event row while we check capacity + insert ticket
         Event event = eventRepository.findByIdForUpdate(eventId)
-                .orElseThrow(() -> new RuntimeException("Event not found"));
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "EVENT_NOT_FOUND", "Event not found"));
 
-        // rule 1: no duplicate booking
         if (ticketRepository.existsByEventIdAndUserEmail(eventId, userEmail)) {
-            throw new RuntimeException("You have already booked this event");
+            throw new ApiException(HttpStatus.CONFLICT, "ALREADY_BOOKED", "You have already booked this event");
         }
 
-        // rule 2: respect capacity
         long bookedCount = ticketRepository.countByEventId(eventId);
         Integer capacity = event.getCapacity();
 
         if (capacity != null && bookedCount >= capacity) {
-            System.out.println("The event is full");
-            throw new RuntimeException("Event is fully booked");
+            throw new ApiException(HttpStatus.CONFLICT, "EVENT_FULL", "Event is fully booked");
         }
 
         Ticket ticket = new Ticket(event, user, LocalDateTime.now());
